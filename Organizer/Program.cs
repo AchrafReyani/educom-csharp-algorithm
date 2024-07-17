@@ -2,75 +2,79 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Org
+class Program
 {
-    public class Program
+    static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Console.WriteLine("How many elements should be in the list? Please enter a number:");
+        int n = int.Parse(Console.ReadLine());
+
+        List<int> randomList = GenerateRandomList(n);
+
+        Console.WriteLine("\nUnsorted list:");
+        PrintList(randomList);
+
+        // ShiftHighestSort
+        ShiftHighestSort shiftHighestSort = new ShiftHighestSort();
+        List<int> sortedShiftHighest = SortAndTime(shiftHighestSort, randomList);
+        ValidateSorted(sortedShiftHighest);
+
+        // KeepListSorted
+        KeepListSorted keepListSorted = new KeepListSorted();
+        List<int> sortedKeepList = SortAndTime(keepListSorted, randomList);
+        ValidateSorted(sortedKeepList);
+
+        // RotateSort
+        RotateSort rotateSort = new RotateSort();
+        List<int> sortedRotate = SortAndTime(rotateSort, randomList);
+        ValidateSorted(sortedRotate);
+    }
+
+    static List<int> GenerateRandomList(int n)
+    {
+        List<int> randomList = new List<int>();
+        Random random = new Random();
+        for (int i = 0; i < n; i++)
         {
-            // Prompt the user to enter the number of elements to sort
-            Console.WriteLine("Enter amount of numbers to sort:");
-            int number = Convert.ToInt32(Console.ReadLine());
-
-            // Generate a list of random integers
-            List<int> thisList = MakeList(number);
-            ShowList("List", thisList);
-
-            Stopwatch stopWatch = new Stopwatch();
-
-            // ShiftHighestSort sorting
-            ShiftHighestSort newSort = new ShiftHighestSort();
-            stopWatch.Start();
-            List<int> sortedList = newSort.Sort(thisList);
-            stopWatch.Stop();
-            ShowList("sortedList", sortedList);
-            Console.WriteLine($"ShiftHighestSort elapsed time: {stopWatch.ElapsedMilliseconds} ms");
-
-            // RotateSort sorting
-            stopWatch.Reset();
-            RotateSort<int> rotate = new RotateSort<int>(Comparer<int>.Default);
-            stopWatch.Start();
-            List<int> rotatedList = rotate.Sort(thisList);
-            stopWatch.Stop();
-            ShowList("rotatedList", rotatedList);
-            Console.WriteLine($"RotateSort elapsed time: {stopWatch.ElapsedMilliseconds} ms");
+            randomList.Add(random.Next(-99, 100)); // numbers between -99 and 99
         }
+        return randomList;
+    }
 
-        // Generate a list of N random integers between -99 and 99
-        static List<int> MakeList(int N)
+    static void PrintList(List<int> list)
+    {
+        int maxPrint = Math.Min(200, list.Count);
+        for (int i = 0; i < maxPrint; i++)
         {
-            var rand = new Random();
-            var newList = new List<int>();
-
-            for (int i = 0; i < N; i++)
-            {
-                newList.Add(rand.Next(-99, 99));
-            }
-
-            return newList;
+            Console.Write($"{list[i]} ");
         }
+        Console.WriteLine();
+    }
 
-        // Display the list with a specified label
-        public static void ShowList(string label, List<int> theList)
+    static List<int> SortAndTime(dynamic sorter, List<int> list)
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        List<int> sortedList = sorter.Sort(list);
+        stopwatch.Stop();
+
+        Console.WriteLine("\nSorted list:");
+        PrintList(sortedList);
+        Console.WriteLine($"Execution time: {stopwatch.ElapsedMilliseconds} ms");
+
+        return sortedList;
+    }
+
+    static void ValidateSorted(List<int> sortedList)
+    {
+        for (int i = 1; i < sortedList.Count; i++)
         {
-            int count = theList.Count;
-            if (count > 200)
+            if (sortedList[i] < sortedList[i - 1])
             {
-                count = 200; // Do not show more than 200 numbers
+                Console.WriteLine("SortError: List has not been sorted correctly.");
+                return;
             }
-            Console.WriteLine();
-            Console.Write(label);
-            Console.Write(':');
-            for (int index = 0; index < count; index++)
-            {
-                if (index % 20 == 0) // When index can be divided by 20 exactly, start a new line
-                {
-                    Console.WriteLine();
-                }
-                // Show each number right aligned within 3 characters, with a comma and a space
-                Console.Write($"{theList[index],3}, ");
-            }
-            Console.WriteLine();
         }
+        Console.WriteLine("Sortvalidation: List has been correctly sorted");
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class ShiftHighestSort
+public class KeepListSorted
 {
     private List<int> array;
 
@@ -14,18 +14,16 @@ public class ShiftHighestSort
 
     private void SortFunction(int start, int end)
     {
-        for (int i = 0; i < end; i++)
+        for (int i = start + 1; i <= end; i++)
         {
-            for (int j = 0; j < end - i; j++)
+            int selected = array[i];
+            int j = i - 1;
+            while (j >= start && array[j] > selected)
             {
-                if (array[j] > array[j + 1])
-                {
-                    // Swap elements
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-                }
+                array[j + 1] = array[j];
+                j--;
             }
+            array[j + 1] = selected;
         }
     }
 }
